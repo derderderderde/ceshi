@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>产品扫描验证</title>
+</head>
+<body>
+    <h1>欢迎来到产品页面</h1>
+    <p>正在验证您的访问...</p>
+
+    <script>
+        // 获取URL中的查询参数
+        const urlParams = new URLSearchParams(window.location.search);
+        const product = urlParams.get('product');
+
+        // 根据查询参数判断跳转到哪个产品页面
+        function redirectToProduct(product) {
+            if (product === '1') {
+                window.location.href = 'pro1.html';
+            } else if (product === '2') {
+                window.location.href = 'pro2.html';
+            } else if (product === '3') {
+                window.location.href = 'pro3.html';
+            } else {
+                document.body.innerHTML = '<h2>无效的二维码！</h2>';
+            }
+        }
+
+        // 模拟扫码系统（这里只是简单判断，可以根据需求增加复杂的验证逻辑）
+        if (product) {
+            redirectToProduct(product);
+        } else {
+            document.body.innerHTML = '<h2>请通过正确的二维码访问此页面。</h2>';
+        }
+    </script>
+</body>
+</html>
