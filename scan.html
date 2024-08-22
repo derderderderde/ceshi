@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>产品扫描验证</title>
+</head>
+<body>
+    <h1>欢迎来到产品页面</h1>
+    <p>正在验证您的访问...</p>
+
+    <script>
+        // 获取URL中的查询参数
+        const urlParams = new URLSearchParams(window.location.search);
+        const product = urlParams.get('product');
+
+        // 模拟专属二维码的唯一标识符
+        const validProducts = ['pro1', 'pro2', 'pro3'];
+
+        // 验证并跳转到对应的产品页面
+        function redirectToProduct(product) {
+            if (product === 'pro1') {
+                window.location.href = 'pro1.html';
+            } else if (product === 'pro2') {
+                window.location.href = 'pro2.html';
+            } else if (product === 'pro3') {
+                window.location.href = 'pro3.html';
+            } else {
+                document.body.innerHTML = '<h2>无效的二维码！</h2>';
+            }
+        }
+
+        // 检查是否是有效的产品二维码
+        if (product && validProducts.includes(product)) {
+            redirectToProduct(product);
+        } else {
+            document.body.innerHTML = '<h2>无效的二维码或未能识别二维码，请通过正确的二维码访问此页面。</h2>';
+        }
+    </script>
+</body>
+</html>
