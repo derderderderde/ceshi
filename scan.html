@@ -38,27 +38,36 @@
         }
 
         // 创建QRCode扫描器对象
-        let html5QrCode = new Html5Qrcode("reader");
+        const html5QrCode = new Html5Qrcode("reader");
 
-        // 开始扫码
-        Html5Qrcode.getCameras().then(cameras => {
-            if (cameras && cameras.length) {
-                let cameraId = cameras[0].id;
-                html5QrCode.start(
-                    cameraId,
-                    {
-                        fps: 10,    // 每秒帧数
-                        qrbox: { width: 250, height: 250 }  // 设置二维码扫描框大小
-                    },
-                    onScanSuccess,
-                    onScanFailure
-                );
-            } else {
-                console.error("没有找到摄像头");
-            }
-        }).catch(err => {
-            console.error(`获取摄像头失败：${err}`);
-        });
+        // 开始扫码，申请摄像头权限
+        function startScanning() {
+            Html5Qrcode.getCameras().then(cameras => {
+                if (cameras && cameras.length) {
+                    let cameraId = cameras[0].id; // 使用第一个摄像头
+                    html5QrCode.start(
+                        cameraId,
+                        {
+                            fps: 10,    // 每秒帧数
+                            qrbox: { width: 250, height: 250 }  // 设置二维码扫描框大小
+                        },
+                        onScanSuccess,
+                        onScanFailure
+                    ).catch(err => {
+                        console.error(`启动摄像头失败：${err}`);
+                    });
+                } else {
+                    console.error("没有找到摄像头");
+                }
+            }).catch(err => {
+                console.error(`获取摄像头失败：${err}`);
+            });
+        }
+
+        // 页面加载完毕后启动扫码
+        window.onload = function() {
+            startScanning();
+        };
     </script>
 </body>
 </html>
