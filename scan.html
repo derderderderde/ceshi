@@ -4,38 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>产品扫描验证</title>
+    <style>
+        #reader {
+            width: 300px;
+            margin: auto;
+        }
+        video {
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
     <h1>欢迎来到产品页面</h1>
-    <p>正在验证您的访问...</p>
+    <p>请扫描二维码以验证您的访问...</p>
 
+    <!-- 用于显示二维码扫描的窗口 -->
+    <div id="reader"></div>
+
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
     <script>
-        // 获取URL中的查询参数
-        const urlParams = new URLSearchParams(window.location.search);
-        const product = urlParams.get('product');
+        const validProducts = {
+            'pro1': 'pro1.html',
+            'pro2': 'pro2.html',
+            'pro3': 'pro3.html'
+        };
 
-        // 模拟专属二维码的唯一标识符
-        const validProducts = ['pro1', 'pro2', 'pro3'];
-
-        // 验证并跳转到对应的产品页面
         function redirectToProduct(product) {
-            if (product === 'pro1') {
-                window.location.href = 'pro1.html';
-            } else if (product === 'pro2') {
-                window.location.href = 'pro2.html';
-            } else if (product === 'pro3') {
-                window.location.href = 'pro3.html';
+            if (validProducts[product]) {
+                window.location.href = validProducts[product];
             } else {
                 document.body.innerHTML = '<h2>无效的二维码！</h2>';
             }
         }
 
-        // 检查是否是有效的产品二维码
-        if (product && validProducts.includes(product)) {
-            redirectToProduct(product);
-        } else {
-            document.body.innerHTML = '<h2>无效的二维码或未能识别二维码，请通过正确的二维码访问此页面。</h2>';
+        function onScanSuccess(decodedText, decodedResult) {
+            const urlParams = new URLSearchParams(decodedText);
+            const productParam = urlParams.get('product');
+            if (productParam) {
+                redirectToProduct(productParam);
+            } else {
+                document.body.innerHTML = '<h2>二维码不包含有效的产品信息。</h2>';
+            }
         }
+
+        function onScanFailure(error) {
+            console.warn(`扫描失败: ${error}`);
+        }
+
+        // 开始摄像头二维码扫描
+        let html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
     </script>
 </body>
 </html>
