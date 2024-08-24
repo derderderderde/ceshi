@@ -1,10 +1,207 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8" />
-    <title>产品1</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>配方管理</title>
+    <style>
+        /* 保留原有样式 */
+        body {
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 100%;
+            margin: 0px auto;
+        }
+        .white-box {
+            background-color: #ffffff;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 87vw;
+            align-items: center;
+            margin-left: 3%;
+        }
+        .label, .value {
+            font-size: 16px;
+            color: #333;
+        }
+        .value {
+            width: 60%;
+            text-align: right;
+        }
+        .van-row {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+        .van-col {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .van-col img {
+            margin-right: -175px;
+        }
+        .van-col h4 {
+            margin: 0;
+        }
+        .image-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 20vh;
+        }
+        .image-container img {
+            width: 100%;
+            max-width: 100%;
+        }
+        .jinggao1-image {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .jinggao1-image img {
+            width: 100%;
+            height: auto;
+        }
+        .jinggao-image img {
+            width: 100%;
+            height: auto;
+        }
+        .fixed-image {
+            position: fixed;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+        }
+    </style>
 </head>
 <body>
-    <h2>欢迎来到产品1页面</h2>
+    <!-- 固定图片 -->
+    <a href="jilu.html">
+        <div class="jinggao1-image"><img src="fan4.jpg" alt="fan4 Image"></div> 
+    </a>
+    <div class="jinggao1-image"><img src="jinggao3.jpg" alt="jinggao3 Image"></div> 
+    
+    <div class="container">
+        <div class="w100" id="verification-box"></div>
+
+        <img src="biaoshi3.jpg" class="fixed-image" alt="右侧固定图片">
+
+        <!-- 产品选择下拉菜单 -->
+        <div class="white-box">
+            <select id="product-select" onchange="fetchProductData()">
+                <option value="">选择产品</option>
+                <!-- 产品选项将通过 Ajax 加载 -->
+            </select>
+        </div>
+
+        <!-- 动态显示产品信息 -->
+        <div class="white-box" id="product-info">
+            <div class="van-row">
+                <div class="van-col" style="margin-right: 315px;">
+                    <img src="biaoshi1.jpg">
+                    <h4>产品信息:</h4>
+                </div>
+            </div>
+            <div id="product-details">
+                <!-- 产品详细信息将通过 Ajax 加载 -->
+            </div>
+        </div>
+
+        <div class="white-box">
+            <div id="location-info">
+                <div class="van-row">
+                    <div class="van-col">
+                        <div class="value van-col-left" id="address" style="font-size: 16px;">正在获取位置...</div>                                         
+                        <div class="value van-col-right" id="time" style="font-size: 16px;">正在获取时间...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="white-box">
+            <div class="van-col">
+                <img src="biaoshi2.jpg">
+                <h4>扫码信息:</h4>
+                <span class="scan-info" id="scan-info">扫码0人0次</span>
+                <button class="expand-button" id="toggle-log">展开</button>
+            </div>
+            <div id="visit-log" style="display: none; font-size: 16px;"></div>
+        </div>
+
+        <div class="image-container">
+            <img src="jifen.jpg" alt="积分图片">
+        </div>
+    </div>
+
+    <script>
+        // 使用Ajax加载产品选项
+        window.onload = function() {
+            fetchProductOptions();
+        };
+
+        function fetchProductOptions() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'pro1.php', true);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    try {
+                        var options = JSON.parse(xhr.responseText); // 解析 JSON 数据
+                        var select = document.getElementById('product-select');
+                        select.innerHTML = '<option value="">选择产品</option>'; // 清空并重置下拉菜单
+                        
+                        if (options.length > 0) {
+                            options.forEach(function(product) {
+                                var option = document.createElement('option');
+                                option.value = product.id;
+                                option.textContent = product.product_name;
+                                select.appendChild(option);
+                            });
+                        } else {
+                            alert('没有可用的产品选项。');
+                        }
+                    } catch (e) {
+                        console.error('解析产品数据时出错:', e);
+                        alert('加载产品选项时出错，请稍后重试。');
+                    }
+                } else {
+                    alert('无法加载产品数据，服务器返回状态码: ' + xhr.status);
+                }
+            };
+            xhr.onerror = function() {
+                alert('请求产品数据时发生错误，请检查网络连接。');
+            };
+            xhr.send();
+        }
+
+        function fetchProductData() {
+            var productId = document.getElementById('product-select').value;
+            if (productId) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', 'phpinfo.php?id=' + productId, true);
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        document.getElementById('product-details').innerHTML = xhr.responseText;
+                    } else {
+                        alert('无法加载产品详情，服务器返回状态码: ' + xhr.status);
+                    }
+                };
+                xhr.onerror = function() {
+                    alert('请求产品详情时发生错误，请检查网络连接。');
+                };
+                xhr.send();
+            } else {
+                document.getElementById('product-details').innerHTML = '';
+            }
+        }
+    </script>
 </body>
 </html>
