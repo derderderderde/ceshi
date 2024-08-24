@@ -1,9 +1,9 @@
 <?php
 // 数据库连接配置
-$host = 'localhost';
+$host = 'rm-wz92814fppe3065l1oo.mysql.rds.aliyuncs.com';
 $dbname = 'aishide';
 $username = 'root';
-$password = '123123';
+$password = 'RootAmy!@';
 
 // 创建数据库连接
 $link = mysqli_connect($host, $username, $password, $dbname);
